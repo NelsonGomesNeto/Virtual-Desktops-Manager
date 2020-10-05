@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -26,6 +27,8 @@ namespace VirtualDesktopsManager
     {
         private KeyHandler[] ghks = new KeyHandler[10];
         private VirtualDesktop[] virtualDesktops;
+        private IDictionary<IntPtr, string> windows;
+        private IDictionary<Guid, ICollection<IntPtr>> virtualDesktopsWindows = new Dictionary<Guid, ICollection<IntPtr>>();
         private bool activated = false;
 
         public MainWindow()
@@ -45,6 +48,13 @@ namespace VirtualDesktopsManager
             RefreshVirtualDesktops();
         }
 
+        protected override void OnStateChanged(EventArgs e)
+        {
+            if (WindowState == WindowState.Minimized)
+                this.Hide();
+            base.OnStateChanged(e);
+        }
+
         private static async void InitializeComObjects()
         {
             try
@@ -56,13 +66,44 @@ namespace VirtualDesktopsManager
                 MessageBox.Show(ex.Message, "Failed to initialize.");
             }
 
-            VirtualDesktop.CurrentChanged += (sender, args) => System.Diagnostics.Debug.WriteLine($"Desktop changed: {args.NewDesktop.Id}");
+            VirtualDesktop.CurrentChanged += (sender, args) => Debug.WriteLine($"Desktop changed: {args.NewDesktop.Id}");
         }
 
         private void RefreshVirtualDesktops()
         {
+            windows = OpenWindowsGetter.GetOpenWindows();
             virtualDesktops = VirtualDesktop.GetDesktops();
-            //virtualDesktopCountLabel.Text = virtualDesktops.Length.ToString();
+            virtualDesktopsWindows.Clear();
+
+            foreach (KeyValuePair<IntPtr, string> window in windows)
+            {
+                VirtualDesktop virtualDesktop = VirtualDesktop.FromHwnd(window.Key);
+                if (virtualDesktop != null)
+                {
+                    Guid virtualDesktopGuid = virtualDesktop.Id;
+                    if (!virtualDesktopsWindows.ContainsKey(virtualDesktopGuid))
+                        virtualDesktopsWindows.Add(virtualDesktopGuid, new List<IntPtr>());
+                    virtualDesktopsWindows[virtualDesktopGuid].Add(window.Key);
+                }
+            }
+
+            for (int i = 0; i < virtualDesktops.Length; i++)
+            {
+                VirtualDesktop virtualDesktop = virtualDesktops[i];
+                string windowsNames = "";
+                foreach (IntPtr handles in virtualDesktopsWindows[virtualDesktop.Id])
+                {
+                    if (!string.IsNullOrEmpty(windowsNames))
+                        windowsNames += "\n";
+                    windowsNames += windows[handles];
+                }
+                TextBlock item = new TextBlock { Text = virtualDesktopsWindows[virtualDesktop.Id].Count.ToString(), ToolTip = windowsNames, TextAlignment = TextAlignment.Center, FontSize = 48 };
+                WindowsGrid.Children.Add(item);
+                if (i / 3 >= WindowsGrid.RowDefinitions.Count)
+                    WindowsGrid.RowDefinitions.Add(new RowDefinition());
+                Grid.SetColumn(item, i % 3);
+                Grid.SetRow(item, i / 3);
+            }
         }
 
         private void MessageHandler(ref MSG m, ref bool handled)

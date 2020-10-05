@@ -8,8 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="wand_icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="VirtualDesktop" Version="4.0.1" />
     <PackageReference Include="VirtualDesktop.WPF" Version="4.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="wand_icon.ico" />
   </ItemGroup>
 
 </Project>

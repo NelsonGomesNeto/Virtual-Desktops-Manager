@@ -5,8 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VirtualDesktopsManager"
         mc:Ignorable="d"
-        Title="MainWindow" Height="200" Width="400" Closing="Window_Closing">
-    <Grid>
-        <Button x:Name="EnableButton" Content="Button" HorizontalAlignment="Left" Margin="100,0,0,0" VerticalAlignment="Center" Height="100" Width="200" FontSize="48" Click="EnableButton_Click"/>
-    </Grid>
+        Title="MainWindow" Height="600" Width="400" Closing="Window_Closing" Icon="/wand_icon.ico">
+    <StackPanel>
+        <Button x:Name="EnableButton" Content="Button" Height="100" Width="200" FontSize="48" Click="EnableButton_Click"/>
+        <Grid x:Name="WindowsGrid" ShowGridLines="True">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+        </Grid>
+    </StackPanel>
 </Window>
