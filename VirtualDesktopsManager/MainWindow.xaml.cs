@@ -40,7 +40,7 @@ namespace VirtualDesktopsManager
             //EnableButton.BackColor = Color.Red;
             for (int i = 0; i < 10; i++)
                 ghks[i] = new KeyHandler(Constants.WIN + Constants.CTRL + Constants.ALT, Constants.D0 + i, handle);
-            InitializeKeyHandlers();
+            AddAllKeyHandlers();
 
             RefreshVirtualDesktops();
         }
@@ -83,12 +83,12 @@ namespace VirtualDesktopsManager
                 virtualDesktops[key - Constants.D1].Switch();
         }
 
-        private void InitializeKeyHandlers()
+        private void AddAllKeyHandlers()
         {
             for (int i = 0; i < 10; i++)
                 ghks[i].Register();
-            //EnableButton.BackColor = Color.Green;
-            //EnableButton.Text = "Disable";
+            EnableButton.Background = new SolidColorBrush(Colors.Green);
+            EnableButton.Content = "Disable";
             activated = true;
         }
 
@@ -101,14 +101,22 @@ namespace VirtualDesktopsManager
             if (unregisterFailed)
                 MessageBox.Show("Hotkey failed to unregister!");
 
-            //EnableButton.BackColor = Color.Red;
-            //EnableButton.Text = "Enable";
+            EnableButton.Background = new SolidColorBrush(Colors.Red);
+            EnableButton.Content = "Enable";
             activated = false;
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             RemoveAllKeyHandlers();
+        }
+
+        private void EnableButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (activated)
+                RemoveAllKeyHandlers();
+            else
+                AddAllKeyHandlers();
         }
     }
 }

@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VirtualDesktopsManager"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Closing="Window_Closing">
+        Title="MainWindow" Height="200" Width="400" Closing="Window_Closing">
     <Grid>
-        <UserControl Focusable="True"></UserControl>
+        <Button x:Name="EnableButton" Content="Button" HorizontalAlignment="Left" Margin="100,0,0,0" VerticalAlignment="Center" Height="100" Width="200" FontSize="48" Click="EnableButton_Click"/>
     </Grid>
 </Window>
